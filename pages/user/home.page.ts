@@ -14,12 +14,12 @@ export class UserHomePage {
     await this.logoutButton.click();
   }
 
-  async validateLoginSuccess() {
-    await expect(this.logoutButton).toBeVisible();
-  }
-
   async searchProduct(productName: string) {
     await this.searchField.fill(productName);
     await this.searchField.press('Enter');
   } 
+
+  async validateLoginSuccess() {
+    await expect(this.logoutButton).toBeVisible();
+  }  
 }

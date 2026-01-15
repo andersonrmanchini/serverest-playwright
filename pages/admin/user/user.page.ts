@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { AdministratorHomePage } from '../home.page';
+import { UserHomePage } from '../../user/home.page';
 
 export class SignUpPage {
   readonly page: Page;
@@ -37,14 +38,23 @@ export class SignUpPage {
       await this.signUpButton.click();
   }
 
-  async registerUser(
+  async registerAdminUser(
     email: string, 
     password: string, 
-    name: string, 
-    isAdministrator: boolean = false): Promise<AdministratorHomePage> {
-      await this.submitRegistrationForm(email, password, name, isAdministrator);
+    name: string): Promise<AdministratorHomePage> {
+      await this.submitRegistrationForm(email, password, name, true);
       // Após o cadastro, o sistema redireciona para a home,
       // então retornamos uma nova instância da HomePage.
       return new AdministratorHomePage(this.page);
+  }
+
+  async registerUser(
+    email: string, 
+    password: string, 
+    name: string): Promise<UserHomePage> {
+      await this.submitRegistrationForm(email, password, name, false);
+      // Após o cadastro, o sistema redireciona para a home,
+      // então retornamos uma nova instância da HomePage.
+      return new UserHomePage(this.page);
   }
 }

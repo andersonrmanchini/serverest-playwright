@@ -8,9 +8,10 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 export default defineConfig({
   // Diretório onde os testes estão localizados
   testDir: './tests',
+  testMatch: /.*\.spec\.(ts|js)/,
 
   // Arquivo de setup global (executa uma vez antes de todos os testes)
-  globalSetup: require.resolve('./tests/setup/global.setup.ts'),
+  globalSetup: require.resolve('./setup/global.setup.ts'),
   
   // Timeout global para cada teste (em milissegundos)
   timeout: 60 * 1000,
@@ -45,37 +46,25 @@ export default defineConfig({
     // --- PROJETO PARA TESTES DE UI ---
     {
       name: 'ui',
-      testMatch: /.*\.spec\.ts/, // Procura por testes de UI
-      testIgnore: /.*\.api\.spec\.ts/, // Ignora os testes de API
+      // Procura por testes em tests/ui que terminam com .spec.ts, excluindo .api.spec.ts
+      testMatch: /tests\/ui\/.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: process.env.WEB_BASE_URL,
         channel: 'chrome', // Força o uso do Google Chrome instalado localmente
-        headless: true, // Mude para false para ver o navegador abrir
+        headless: true, // Modo visível para depuração local
       },
     },
 
     // --- PROJETO PARA TESTES DE API ---
     {
       name: 'api',
-      testMatch: /.*\.api\.spec\.ts/, // Procura por testes de API
-      testIgnore: /.*\.spec\.ts/, // Ignora os testes de UI
+      // Procura apenas por arquivos que terminam com .api.spec.ts
+      testMatch: /.*\.api\.spec\.ts/,
       use: {
         // Contexto de requisição de API, já configurado
         baseURL: process.env.API_BASE_URL,
-        headless: true,
-      },
-    },
-
-     // --- PROJETO PARA TESTES COM IA ---
-     {
-      name: 'ai',
-      testMatch: /.*\.ai\.spec\.ts/, // Procura por testes que usam IA
-      testIgnore: /.*\.spec\.ts|.*\.api\.spec\.ts/, // Ignora os testes de UI e API
-      use: {
-        ...devices['Desktop Chrome'],
-        baseURL: process.env.WEB_BASE_URL,
-        headless: false,
+        headless: true, // Testes de API não precisam de interface gráfica
       },
     },
   ],
