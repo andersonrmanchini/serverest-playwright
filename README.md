@@ -1,62 +1,77 @@
-# Automação de Testes com Playwright e IA para a Aplicação ServeRest
+# Automação de Testes com Playwright para a Aplicação ServeRest
 
-Este projeto demonstra uma suíte de testes de automação de interface de usuário (UI) para a aplicação [ServeRest](https://github.com/ServeRest/ServeRest), utilizando Playwright, TypeScript e uma integração inovadora com a API da OpenAI para geração dinâmica de dados de teste.
+Este projeto demonstra uma suíte completa de testes de automação para a aplicação [ServeRest](https://github.com/ServeRest/ServeRest), utilizando Playwright e TypeScript. Inclui testes tanto de interface de usuário (UI) quanto de API (REST).
 
 ## ✨ Funcionalidades Principais
 
-- **Automação de UI com Playwright:** Testes robustos e rápidos que simulam a interação do usuário com a aplicação.
+- **Testes de UI com Playwright:** Testes robustos e rápidos que simulam a interação do usuário com a aplicação.
+- **Testes de API:** Testes de endpoints REST para validar a lógica do backend.
 - **Escrito em TypeScript:** Código tipado, mais seguro e com excelente suporte de IDEs.
-- **Padrão Page Object Model (POM):** Arquitetura limpa e de fácil manutenção, separando a lógica de interação da página dos testes em si.
-- **Geração de Dados com Inteligência Artificial:** Utiliza a API da OpenAI (GPT-3.5 Turbo) para criar dados de teste únicos e realistas (usuários e produtos) a cada execução.
-- **Manipulação Dinâmica de Imagens:** A fábrica de dados de IA busca uma URL de imagem gerada pela IA, faz o download e a utiliza no teste de upload de produto.
-- **Mecanismo de Fallback:** Em caso de falha na API da OpenAI (quota excedida, instabilidade), o sistema recorre a um gerador de dados local para não interromper os testes.
-- **Configuração Centralizada:** Uma `DriverFactory` gerencia a inicialização e configuração do navegador, facilitando ajustes e a manutenção.
+- **Padrão Page Object Model (POM):** Arquitetura limpa e de fácil manutenção para testes de UI.
+- **Services Pattern:** Serviços reutilizáveis para chamadas de API.
+- **Geração de Dados com Faker:** Utiliza a biblioteca `@faker-js/faker` para criar dados de teste únicos e realistas a cada execução.
+- **Setup Global:** Configuração centralizada de variáveis de ambiente e inicialização de contextos.
+- **CI/CD Integrado:** Pipeline GitHub Actions configurado para executar testes automaticamente.
 
 ## 🛠️ Pré-requisitos
 
 Antes de começar, certifique-se de que você tem o seguinte instalado:
 
-- Node.js (versão 18.x ou superior)
-- NPM ou Yarn
+- Node.js (versão 20.x ou superior)
+- NPM
 - A aplicação **ServeRest** deve estar em execução e acessível.
-- Uma chave de API da **OpenAI**.
 
 ## 🚀 Instalação e Configuração
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone <url-do-seu-repositorio>
-    cd serverest-playwright
-    ```
+1. **Clone o repositório:**
+   ```bash
+   git clone <url-do-seu-repositorio>
+   cd serverest-playwright
+   ```
 
-2.  **Instale as dependências do projeto:**
-    ```bash
-    npm install
-    ```
+2. **Instale as dependências do projeto:**
+   ```bash
+   npm install
+   ```
 
-3.  **Instale os navegadores do Playwright:**
-    ```bash
-    npx playwright install
-    ```
+3. **Instale os navegadores do Playwright:**
+   ```bash
+   npx playwright install --with-deps
+   ```
 
-4.  **Configure as variáveis de ambiente:**
-    Crie um arquivo chamado `.env` na raiz do projeto e adicione as seguintes variáveis:
+4. **Configure as variáveis de ambiente:**
+   Crie um arquivo chamado `.env` na raiz do projeto e adicione as seguintes variáveis:
 
-    ```env
-    # URL base da aplicação ServeRest que será testada
-    WEB_BASE_URL="http://localhost:3000"
+   ```env
+   # URL base da API ServeRest
+   API_BASE_URL="https://serverest.dev"
 
-    # Sua chave de API secreta da OpenAI
-    OPENAI_API_KEY="sk-..."
-    ```
+   # URL base da aplicação web ServeRest
+   WEB_BASE_URL="https://front.serverest.dev"
+   ```
 
 ## 🧪 Executando os Testes
 
 Você pode executar os testes de várias maneiras:
 
-- **Executar todos os testes em modo headless (padrão):**
+- **Executar todos os testes:**
   ```bash
-  npx playwright test
+  npm test
+  ```
+
+- **Executar apenas testes de API:**
+  ```bash
+  npm run test:api
+  ```
+
+- **Executar apenas testes de UI:**
+  ```bash
+  npm run test:ui
+  ```
+
+- **Executar testes específicos de admin:**
+  ```bash
+  npm run test:admin
   ```
 
 - **Executar os testes com a interface gráfica do Playwright (UI Mode):**
@@ -66,61 +81,149 @@ Você pode executar os testes de várias maneiras:
 
 - **Executar um arquivo de teste específico:**
   ```bash
-  npx playwright test tests/ui/admin/product.spec.ts
+  npx playwright test tests/api/products.api.spec.ts
   ```
 
-- **Executar os testes em um navegador específico:**
+- **Visualizar o relatório de testes:**
   ```bash
-  npx playwright test --project=chromium
+  npm run report
   ```
 
 ## 📂 Estrutura do Projeto
 
 ```
 serverest-playwright/
-├── pages/                  # Contém as classes do Page Object Model (POM)
-│   ├── admin/              # Páginas específicas da área de administrador
-│   ├── user/               # Páginas específicas da área de usuário comum
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # Pipeline de CI/CD do GitHub Actions
+├── pages/                         # Page Object Model para testes UI
+│   ├── admin/
+│   │   ├── home.page.ts
+│   │   └── product/
+│   │       ├── listProduct.page.ts
+│   │       └── product.page.ts
+│   ├── user/
+│   │   ├── home.page.ts
+│   │   └── listProduct.page.ts
 │   └── authentication.page.ts
-├── tests/                  # Contém os arquivos de teste (.spec.ts)
+├── services/                      # Serviços para testes de API
+│   ├── product.api.service.ts
+│   ├── user.api.service.ts
+│   └── login.api.service.ts
+├── tests/                         # Testes automatizados
+│   ├── api/
+│   │   ├── products.api.spec.ts
+│   │   └── users.api.spec.ts
 │   └── ui/
 │       ├── admin/
+│       │   ├── login.spec.ts
+│       │   └── product.spec.ts
 │       └── user/
-├── utils/                  # Funções de utilidade e helpers
-│   ├── ai.data.factory.ts  # Fábrica para gerar dados de teste com IA e fallback local
-│   ├── driver.factory.ts   # Fábrica para criar e configurar a instância do navegador
-│   ├── openai.helper.ts    # Helper para chamadas à API da OpenAI
-│   └── pictures/           # Imagens estáticas para o fallback
-├── playwright/.cache/      # Diretório para imagens baixadas pela IA (gerado em tempo de execução)
-├── .env                    # Arquivo para variáveis de ambiente (deve ser criado localmente)
+│           └── listProduct.spec.ts
+├── utils/                         # Funções de utilidade
+│   ├── data.factory.ts            # Fábrica para gerar dados de teste
+│   ├── driver.factory.ts          # Configuração do driver do Playwright
+│   └── pictures/
+│       └── fogao.jpg              # Imagem para upload de testes
+├── setup/
+│   └── global.setup.ts            # Setup global de testes
+├── playwright-report/             # Relatórios dos testes (gerado após execução)
+├── .env                           # Variáveis de ambiente (criado localmente)
+├── .github/workflows/ci.yml       # Pipeline do GitHub Actions
+├── playwright.config.ts           # Configuração do Playwright
 ├── package.json
-└── playwright.config.ts
+└── README.md
 ```
 
 ## 🧩 Componentes-Chave
 
-### AI Data Factory (`utils/ai.data.factory.ts`)
+### Data Factory (`utils/data.factory.ts`)
 
-Este é o coração da geração de dados dinâmicos.
+Responsável pela geração de dados de teste realistas:
 
-- **`generateFakeUser()`**: Envia um prompt para a OpenAI solicitando um objeto JSON com dados de um novo usuário (nome, email, senha, etc.).
-- **`generateFakeProduct()`**: Solicita à OpenAI os dados de um produto, incluindo uma `imageUrl`. Em seguida, faz o download dessa imagem, a salva no diretório `playwright/.cache/` e retorna o caminho local do arquivo para ser usado no teste de upload.
-- **Funções de Fallback**: Se a chamada à API falhar, as funções `generateLocalFakeUser()` e `generateLocalFakeProduct()` são acionadas, gerando dados locais com um *timestamp* para garantir a unicidade e evitar que os testes quebrem.
+- **`generateFakeUser(isAdmin)`**: Gera um objeto de usuário com nome, email, senha e flag de administrador usando a biblioteca Faker.
+- **`generateFakeProduct()`**: Gera um objeto de produto com nome, preço, descrição, quantidade e imagem (usando arquivo local).
 
-### Driver Factory (`utils/driver.factory.ts`)
+### Services (`services/`)
 
-Abstrai a criação da instância do Playwright (`Browser`, `Context`, `Page`). É configurado para iniciar o navegador em modo `headed` (`headless: false`) para facilitar a depuração visual durante o desenvolvimento.
+Serviços para comunicação com a API:
 
-### Page Object Model (`/pages`)
+- **`UserService`**: Gerencia operações de usuários (create, get, list).
+- **`ProductService`**: Gerencia operações de produtos (create, get, list, update, delete).
+- **`LoginService`**: Gerencia autenticação e obtenção de tokens.
 
-Seguindo as melhores práticas de automação, cada página da aplicação tem sua própria classe (ex: `AuthenticationPage`, `ProductPage`). Essas classes encapsulam os seletores (locators) e os métodos que representam as interações do usuário (ex: `registerUser()`, `goToSignUpPage()`), tornando os testes mais legíveis e fáceis de manter.
+### Page Object Model (`pages/`)
+
+Seguindo as melhores práticas de automação, cada página tem sua própria classe que encapsula:
+
+- **Seletores (locators):** Elementos da página de forma reutilizável.
+- **Métodos de interação:** Ações que o usuário pode fazer (ex: `registerUser()`, `loginUser()`).
+
+Páginas disponíveis:
+- `AuthenticationPage`: Login e registro
+- `AdminHomePage`: Dashboard do administrador
+- `AdminProductPage`: Gerenciamento de produtos (admin)
+- `AdminListProductPage`: Listagem de produtos (admin)
+- `UserHomePage`: Dashboard do usuário
+- `UserListProductPage`: Listagem de produtos (usuário)
+
+### Setup Global (`setup/global.setup.ts`)
+
+Configuração executada uma vez antes de todos os testes:
+
+- Carrega variáveis de ambiente
+- Configura URLs base da API e web
+- Inicializa contextos para testes
+
+## 🔄 Fluxo de CI/CD
+
+O projeto está configurado com GitHub Actions:
+
+1. **Trigger:** Testes executam em push para `main` e `develop`, e em pull requests para essas branches.
+2. **Ambiente:** Ubuntu latest com Node.js 20
+3. **Passos:**
+   - Checkout do código
+   - Setup do Node.js com cache npm
+   - Instalação de dependências
+   - Instalação de browsers do Playwright
+   - Execução dos testes
+   - Upload do relatório de testes como artifact
+
+## 🛡️ Boas Práticas Implementadas
+
+- ✅ **Separação de concerns:** UI, API e dados em módulos distintos
+- ✅ **Reutilização:** Services e Page Objects para evitar duplicação
+- ✅ **Tipagem:** TypeScript para mais segurança
+- ✅ **Fixtures do Playwright:** Uso de `beforeAll` e `afterAll` para setup/teardown
+- ✅ **APIRequestContext:** Contextos separados para testes de API
+- ✅ **Dados dinâmicos:** Geração de dados com Faker para cada execução
+
+## 📊 Scripts Disponíveis
+
+```json
+{
+  "test": "playwright test",                    // Todos os testes
+  "test:ui": "playwright test --project ui",    // Apenas UI
+  "test:api": "playwright test --project api",  // Apenas API
+  "test:admin": "playwright test tests/ui/admin/", // Admin
+  "report": "playwright show-report"            // Ver relatório
+}
+```
+
+## 🐛 Troubleshooting
+
+### Erro de conexão com a API
+- Verifique se a URL em `API_BASE_URL` está correta
+- Verifique se a ServeRest API está acessível
+
+### Erro de autenticação
+- Certifique-se de que o usuário criado no `beforeAll` é um administrador (`administrador: "true"`)
+- Verifique se o token está sendo gerado corretamente
+
+### Erro de timeout
+- Aumente o valor de `timeout` no `playwright.config.ts` se necessário
+- Verifique a velocidade da sua conexão de internet
 
 ---
 
-*Este projeto serve como um exemplo avançado de como combinar a robustez do Playwright com o poder da inteligência artificial para criar testes de automação mais inteligentes e resilientes.*
-
-```
-
-<!--
-[PROMPT_SUGGESTION]Crie um novo teste para validar a exclusão de um produto recém-cadastrado.[/PROMPT_SUGGESTION]
-[PROMPT_SUGGESTION]Refatore o `ai.data.factory.ts` para que a inicialização do cliente da OpenAI seja feita apenas uma vez (padrão Singleton).[/PROMPT_SUGGESTION]
+*Projeto de automação robusta e escalável combinando Playwright, TypeScript e best practices de teste.*

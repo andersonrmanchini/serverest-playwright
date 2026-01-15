@@ -1,5 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
-import { SignUpPage } from './user/user.page.ts';
+import { SignUpPage } from './admin/user/user.page';
 
 export class AuthenticationPage {
   readonly page: Page;
@@ -27,9 +27,20 @@ export class AuthenticationPage {
   }
 
   async goToSignUpPage() {
+    // Navega para a página de login primeiro, se ainda não estiver lá
+    await this.goto();
+    
     const signUpPage = new SignUpPage(this.page);
-
     await this.signUpButton.click();
-    return signUpPage
+    
+    // Aguarda o elemento da página de signup estar visível
+    await this.page.waitForURL('**/cadastrarusuarios');
+    
+    return signUpPage;
+  }
+
+  async goToLogin() {
+    await this.goto();
+    return this;
   }
 }

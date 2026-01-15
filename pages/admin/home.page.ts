@@ -1,5 +1,5 @@
 import { type Locator, type Page, expect } from "@playwright/test";
-import { ProductPage } from "../product.page";
+import { ProductPage } from "../../pages/admin/product/product.page";
 
 export class AdministratorHomePage {
   readonly page: Page;
@@ -9,7 +9,7 @@ export class AdministratorHomePage {
   constructor(page: Page) {
     this.page = page;
     this.logoutButton = page.getByTestId("logout");
-    this.productButton = page.getByTestId("cadastrar-produto");
+    this.productButton = page.getByTestId("cadastrarProdutos");
   }
 
   async logout() {
